@@ -1,0 +1,6 @@
+*.py[co]
+.settings
+.*project
+.project
+*~
+\#*\#
