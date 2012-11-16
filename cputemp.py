@@ -1,13 +1,14 @@
 from argparse import ArgumentParser
 import bottle
 import json
-import subprocess
 import wmi
 
 wmi_computer = wmi.WMI()
 ohm = wmi.WMI(namespace='root\\OpenHardwareMonitor')
 
-
+#===============================================================================
+# API Helpsers
+#===============================================================================
 def get_cpu_load():
     """Return the current average CPU load across all processor cores"""
     wql = "SELECT * FROM Win32_PerfFormattedData_Counters_ProcessorInformation WHERE NAME = '_Total'"
@@ -24,8 +25,9 @@ def get_cpu_temperature():
     """Get the CPU temperature in Celsius"""
     return ohm.query("select * from Sensor where Identifier = '/amdcpu/0/temperature/0'")[0].Value; 
 
-get_cpu_temperature()
-
+#===============================================================================
+# API Views
+#===============================================================================
 @bottle.route("/")
 def index():
     return "Hello, world!"
@@ -52,7 +54,9 @@ def cpu_load():
     bottle.response.content_type = "application/json"
     return json.dumps({"cpu_load_percent": get_cpu_load(), })
 
-
+#===============================================================================
+# Plumbing
+#===============================================================================
 def parse_arguments():
     parser = ArgumentParser()
     parser.add_argument('-p', '--port',
