@@ -21,10 +21,12 @@ class WindowsSystemInformationProvider(object):
         return 100 - int(res[0].PercentIdleTime)
 
     def get_free_memory(self):
-        return int(self.wmi.Win32_OperatingSystem(self)[0].FreePhysicalMemory)
+        avail_gb = self.ohm.query("select * from Sensor where Identifier = '/ram/data/0'")[0].Value  # available
+        return int(avail_gb * 1024 * 1024 * 1024)
 
     def get_total_memory(self):
-        return int(self.wmi.Win32_ComputerSystem(self)[0].TotalPhysicalMemory)
+        used_gb = self.ohm.query("select * from Sensor where Identifier = '/ram/data/1'")[0].Value
+        return int(used_gb * 1024 * 1024 * 1024) + self.get_free_memory()
 
     def get_cpu_temperature(self):
         """Get the CPU temperature in Celsius"""
